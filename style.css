@@ -1,0 +1,39 @@
+* {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	color: #333;
+	font-family: Arial, serif;
+}
+
+.board-wrapper {
+	position: relative;
+	margin: 10px;
+}
+
+.board {
+	display: table;
+	border-collapse: collapse;
+}
+
+.row {
+	display: table-row;
+}
+
+.cell, .snake {
+	width: 20px;
+	height: 20px;
+}
+
+.cell {
+	display: table-cell;
+	border: 1px solid #ccc;
+}
+
+.snake {
+	background: #333;
+	position: absolute;
+}
