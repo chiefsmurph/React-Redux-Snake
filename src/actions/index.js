@@ -36,3 +36,9 @@ export function prependSnake(coords) {
 		coords
 	}
 }
+
+export function newGame() {
+	return {
+		type: 'NEW_GAME'
+	}
+}

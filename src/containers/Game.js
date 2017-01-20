@@ -1,31 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { BOARD_WIDTH, BOARD_HEIGHT, SQUARE_SIZE } from '../constants';
+import { BOARD_WIDTH, BOARD_HEIGHT, SQUARE_SIZE, INITIAL_DIRECTION, GAME_SPEED } from '../constants';
 import Board from '../components/Board';
 import Snake from '../components/Snake';
 import Food from '../components/Food';
-import { moveSnake, setFood, setDirection, prependSnake } from '../actions';
+import { moveSnake, setFood, setDirection, prependSnake, newGame } from '../actions';
+
+let snakeInterval;
+let directionOnNextTick = INITIAL_DIRECTION;
 
 class Game extends Component {
 	componentWillMount() {
-		const timer = setInterval(() => {
-			this.props.moveSnake(this.props.snake);
-		}, 250);
 		this.setControls();
 		this.newFood();
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const snakeCoords = nextProps.snake.coords;
+		const snakeHeadCoords = snakeCoords[snakeCoords.length-1];
 		const foodCoords = nextProps.food;
-		if(snakeCoords[snakeCoords.length-1][0] === foodCoords[0] && snakeCoords[snakeCoords.length-1][1] === foodCoords[1]) {
+		// if it ate a piece of food
+		if(snakeHeadCoords[0] === foodCoords[0] && snakeHeadCoords[1] === foodCoords[1]) {
 			this.newFood();
 			this.props.prependSnake(snakeCoords[snakeCoords.length-1]);
 		}
+		// if it hit a wall
+		if(snakeHeadCoords[0] === -1 || snakeHeadCoords[0] === BOARD_WIDTH || snakeHeadCoords[1] === -1 || snakeHeadCoords[1] === BOARD_HEIGHT) {
+			clearInterval(snakeInterval);
+			this.props.newGame();
+			this.newFood();
+		}
 	}
 
-	checkFoodCollision(x, y) {
+	checkSnakeCollision(x, y) {
 		let badMatch = false;
 		this.props.snake.coords.map(coords => {
 			if(coords[0] === x && coords[1] === y) badMatch = true;
@@ -37,7 +45,7 @@ class Game extends Component {
 		const x = Math.floor(Math.random() * BOARD_WIDTH);
 		const y = Math.floor(Math.random() * BOARD_HEIGHT);
 		let badMatch = false;
-		if(this.checkFoodCollision(x, y)) this.newFood();
+		if(this.checkSnakeCollision(x, y)) this.newFood();
 		else this.props.setFood([x, y]);
 	}
 
@@ -51,26 +59,23 @@ class Game extends Component {
 				case 37: // left arrow
 					// make sure we're not trying to move into the snake's body
 					// or move outside the boundaries
-					this.props.snake.direction !== 'RIGHT'
-						&& x !== 0
-						&& this.props.setDirection('LEFT');
+					if(this.props.snake.direction !== 'RIGHT' && x !== 0) directionOnNextTick = 'LEFT';
 					break;
 				case 39: // right arrow
-					this.props.snake.direction !== 'LEFT' 
-						&& x !== BOARD_WIDTH - 1
-						&& this.props.setDirection('RIGHT');
+					if(this.props.snake.direction !== 'LEFT' && x !== BOARD_WIDTH - 1) directionOnNextTick = 'RIGHT';
 					break;
 				case 40: // down arrow
-					this.props.snake.direction !== 'UP' 
-						&& y !== BOARD_HEIGHT - 1
-						&& this.props.setDirection('DOWN');
+					if(this.props.snake.direction !== 'UP' && y !== BOARD_HEIGHT - 1) directionOnNextTick = 'DOWN';
 					break;
 				case 38: // up arrow
-					this.props.snake.direction !== 'DOWN' 
-						&& y !== 0
-						&& this.props.setDirection('UP');
+					if(this.props.snake.direction !== 'DOWN' && y !== 0) directionOnNextTick = 'UP';
 					break;
 				case 32: // space
+					clearInterval(snakeInterval);
+					snakeInterval = setInterval(() => {
+						this.props.setDirection(directionOnNextTick);
+						this.props.moveSnake(this.props.snake);
+					}, GAME_SPEED);
 					break;
 			}
 		});
@@ -82,6 +87,7 @@ class Game extends Component {
 				<Board />
 				<Snake coords={this.props.snake.coords} />
 				<Food coords={this.props.food} />
+				<button onClick={this.props.newGame}>reset</button>
 			</div>
 		);
 	}
@@ -96,7 +102,8 @@ function mapDispatchToProps(dispatch) {
 		moveSnake,
 		setFood,
 		setDirection,
-		prependSnake
+		prependSnake,
+		newGame
 	}, dispatch);
 }
 
