@@ -1,5 +1,6 @@
 export function moveSnake(snake) {
-	let { coords, direction } = snake;
+	let direction = snake.direction;
+	let coords = snake.coords.slice();
 	let headCoords = coords[coords.length-1];
 	let newHead = () => {
 		if(direction === 'DOWN') return [headCoords[0], headCoords[1]+1];
@@ -33,7 +34,7 @@ export function setDirection(direction) {
 export function prependSnake(coords) {
 	return {
 		type: 'PREPEND_SNAKE',
-		coords
+		coords: coords
 	}
 }
 
