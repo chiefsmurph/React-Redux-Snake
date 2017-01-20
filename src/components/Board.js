@@ -13,11 +13,11 @@ export default function Board() {
 	return (
 		<div className="board">
 			{
-				board.map(row => {
+				board.map((row, rowIndex) => {
 					return (
-						<div className="row">
+						<div className="row" key={rowIndex}>
 							{
-								row.map(cell => <div className="cell" />)
+								row.map((cell, cellIndex) => <div className="cell" key={cellIndex} />)
 							}
 						</div>
 					)

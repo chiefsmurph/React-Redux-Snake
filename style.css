@@ -23,7 +23,7 @@ body {
 	display: table-row;
 }
 
-.cell, .snake {
+.cell, .snake, .food {
 	width: 20px;
 	height: 20px;
 }
@@ -35,5 +35,10 @@ body {
 
 .snake {
 	background: #333;
+	position: absolute;
+}
+
+.food {
+	background: green;
 	position: absolute;
 }

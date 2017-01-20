@@ -9,9 +9,44 @@ const initialState = {
 			[Math.floor(BOARD_WIDTH/2), 5]
 		]
 	},
-	food: [Math.floor(Math.random()*BOARD_WIDTH), Math.floor(Math.random()*BOARD_HEIGHT)]
+	food: []
 };
 
 export default function(state = initialState, action) {
+	switch(action.type) {
+		case 'MOVE_SNAKE':
+			return {
+				...state,
+				snake: {
+					...state.snake,
+					coords: action.coords
+				}
+			}
+
+		case 'SET_FOOD':
+			return {
+				...state,
+				food: action.food
+			}
+
+		case 'SET_DIRECTION':
+			return {
+				...state,
+				snake: {
+					...state.snake,
+					direction: action.direction
+				}
+			}
+
+		case 'PREPEND_SNAKE':
+			return {
+				...state,
+				snake: {
+					...state.snake,
+					coords: [[action.coords], ...state.snake.coords]
+				}
+			}
+	}
+
 	return state;
 }
