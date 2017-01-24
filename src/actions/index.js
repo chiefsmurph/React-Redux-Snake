@@ -43,3 +43,9 @@ export function newGame() {
 		type: 'NEW_GAME'
 	}
 }
+
+export function loseGame() {
+	return {
+		type: 'LOSE_GAME'
+	}
+}

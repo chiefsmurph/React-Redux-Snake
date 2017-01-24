@@ -5,7 +5,7 @@ import { BOARD_WIDTH, BOARD_HEIGHT, SQUARE_SIZE, INITIAL_DIRECTION, GAME_SPEED }
 import Board from '../components/Board';
 import Snake from '../components/Snake';
 import Food from '../components/Food';
-import { moveSnake, setFood, setDirection, prependSnake, newGame } from '../actions';
+import { moveSnake, setFood, setDirection, prependSnake, newGame, loseGame } from '../actions';
 
 let snakeInterval;
 let directionOnNextTick = INITIAL_DIRECTION;
@@ -15,7 +15,9 @@ class Game extends Component {
 		super();
 
 		this.resetGame = this.resetGame.bind(this);
+		this.loseGame = this.loseGame.bind(this);
 	}
+
 	componentWillMount() {
 		this.setControls();
 		this.newFood();
@@ -50,8 +52,13 @@ class Game extends Component {
 			snakeHeadCoords[1] === BOARD_HEIGHT ||
 			checkSelfCollision()
 		) {
-			clearInterval(snakeInterval);
+			this.loseGame();
 		}
+	}
+
+	loseGame() {
+		clearInterval(snakeInterval);
+		this.props.loseGame();
 	}
 
 	resetGame() {
@@ -110,7 +117,7 @@ class Game extends Component {
 		return (
 			<div className="board-wrapper">
 				<Board />
-				<Snake coords={this.props.snake.coords} />
+				<Snake coords={this.props.snake.coords} lost={this.props.game.lost} />
 				<Food coords={this.props.food} />
 				<button onClick={this.resetGame}>reset</button>
 			</div>
@@ -128,7 +135,8 @@ function mapDispatchToProps(dispatch) {
 		setFood,
 		setDirection,
 		prependSnake,
-		newGame
+		newGame,
+		loseGame
 	}, dispatch);
 }
 
