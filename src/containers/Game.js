@@ -78,17 +78,21 @@ class Game extends Component {
 			const y = coords[coords.length-1][1];
 
 			switch(e.keyCode) {
+				case 65: // A key
 				case 37: // left arrow
 					// make sure we're not trying to move into the snake's body
 					// or move outside the boundaries
 					if(this.props.snake.direction !== 'RIGHT' && x !== 0) this.directionOnNextTick = 'LEFT';
 					break;
+				case 68: // D key
 				case 39: // right arrow
 					if(this.props.snake.direction !== 'LEFT' && x !== BOARD_WIDTH - 1) this.directionOnNextTick = 'RIGHT';
 					break;
+				case 83: // S key
 				case 40: // down arrow
 					if(this.props.snake.direction !== 'UP' && y !== BOARD_HEIGHT - 1) this.directionOnNextTick = 'DOWN';
 					break;
+				case 87: // W key
 				case 38: // up arrow
 					if(this.props.snake.direction !== 'DOWN' && y !== 0) this.directionOnNextTick = 'UP';
 					break;
