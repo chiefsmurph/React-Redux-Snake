@@ -12,6 +12,8 @@ body {
 .board-wrapper {
 	position: relative;
 	margin: 10px;
+	display: inline-block;
+	overflow: hidden;
 }
 
 .board {
@@ -41,4 +43,17 @@ body {
 .food {
 	background: green;
 	position: absolute;
+}
+
+.reset {
+	font-size: 22px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	padding: 5px 20px;
+	transform: translate(-50%, -50%);
+}
+
+.score {
+	margin: 10px;
 }

@@ -49,3 +49,9 @@ export function loseGame() {
 		type: 'LOSE_GAME'
 	}
 }
+
+export function incrementScore() {
+	return {
+		type: 'INCREMENT_SCORE'
+	}
+}

@@ -1,5 +1,6 @@
 const INITIAL_STATE = {
-	lost: false
+	lost: false,
+	score: 0
 }
 
 export default function(state = INITIAL_STATE, action) {
@@ -8,6 +9,17 @@ export default function(state = INITIAL_STATE, action) {
 			return {
 				...state,
 				lost: true
+			}
+		case 'NEW_GAME':
+			return {
+				...state,
+				score: 0,
+				lost: false
+			}
+		case 'INCREMENT_SCORE':
+			return {
+				...state,
+				score: state.score + 1
 			}
 	}
 

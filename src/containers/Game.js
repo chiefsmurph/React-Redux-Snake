@@ -5,7 +5,7 @@ import { BOARD_WIDTH, BOARD_HEIGHT, SQUARE_SIZE, INITIAL_DIRECTION, GAME_SPEED }
 import Board from '../components/Board';
 import Snake from '../components/Snake';
 import Food from '../components/Food';
-import { moveSnake, setFood, setDirection, prependSnake, newGame, loseGame } from '../actions';
+import { moveSnake, setFood, setDirection, prependSnake, newGame, loseGame, incrementScore } from '../actions';
 
 let snakeInterval;
 let directionOnNextTick = INITIAL_DIRECTION;
@@ -23,14 +23,14 @@ class Game extends Component {
 		this.newFood();
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const snakeCoords = nextProps.snake.coords;
+	componentDidUpdate() {
+		const snakeCoords = this.props.snake.coords;
 		const snakeHeadCoords = snakeCoords[snakeCoords.length-1];
-		const foodCoords = nextProps.food;
+		const foodCoords = this.props.food;
 		const checkSelfCollision = () => {
 			let collided = false;
 			snakeCoords.map((coords, index) => {
-				// we have to skip the head coords or else we get problems
+				// we have to skip the head coords
 				if(index !== snakeCoords.length-1 && coords[0] === snakeHeadCoords[0] && coords[1] === snakeHeadCoords[1]) {
 					collided = true;
 				}
@@ -41,17 +41,17 @@ class Game extends Component {
 		// if it ate a piece of food
 		if(snakeHeadCoords[0] === foodCoords[0] && snakeHeadCoords[1] === foodCoords[1]) {
 			this.newFood();
+			this.props.incrementScore();
 			this.props.prependSnake(snakeCoords[snakeCoords.length-1].slice());
 		}
-
+		
 		// if it hit a wall or itself
-		if(
-			snakeHeadCoords[0] === -1 || 
-			snakeHeadCoords[0] === BOARD_WIDTH || 
-			snakeHeadCoords[1] === -1 || 
-			snakeHeadCoords[1] === BOARD_HEIGHT ||
-			checkSelfCollision()
-		) {
+		if(!this.props.game.lost && (
+				snakeHeadCoords[0] === -1 || 
+				snakeHeadCoords[0] === BOARD_WIDTH || 
+				snakeHeadCoords[1] === -1 || 
+				snakeHeadCoords[1] === BOARD_HEIGHT ||
+				checkSelfCollision())) {
 			this.loseGame();
 		}
 	}
@@ -65,6 +65,7 @@ class Game extends Component {
 		this.props.newGame();
 		this.newFood();
 		clearInterval(snakeInterval);
+		directionOnNextTick = 'DOWN';
 	}
 
 	checkSnakeCollision(matchCoords) {
@@ -103,6 +104,7 @@ class Game extends Component {
 					if(this.props.snake.direction !== 'DOWN' && y !== 0) directionOnNextTick = 'UP';
 					break;
 				case 32: // space
+					if(this.props.game.lost) return false;
 					clearInterval(snakeInterval);
 					snakeInterval = setInterval(() => {
 						this.props.setDirection(directionOnNextTick);
@@ -115,11 +117,14 @@ class Game extends Component {
 
 	render() {
 		return (
-			<div className="board-wrapper">
-				<Board />
-				<Snake coords={this.props.snake.coords} lost={this.props.game.lost} />
-				<Food coords={this.props.food} />
-				<button onClick={this.resetGame}>reset</button>
+			<div>
+				<h1 className="score">Score: { this.props.game.score }</h1>
+				<div className="board-wrapper">
+					<Board />
+					<Snake coords={this.props.snake.coords} lost={this.props.game.lost} />
+					<Food coords={this.props.food} />
+					{ this.props.game.lost && <button onClick={this.resetGame} className="reset">RESET</button> }
+				</div>
 			</div>
 		);
 	}
@@ -136,7 +141,8 @@ function mapDispatchToProps(dispatch) {
 		setDirection,
 		prependSnake,
 		newGame,
-		loseGame
+		loseGame,
+		incrementScore
 	}, dispatch);
 }
 
