@@ -11,8 +11,8 @@ body {
 
 .board-wrapper {
 	position: relative;
-	margin: 10px;
 	display: inline-block;
+	margin: 10px;
 	overflow: hidden;
 }
 
@@ -54,6 +54,6 @@ body {
 	transform: translate(-50%, -50%);
 }
 
-.score {
+.score, .help {
 	margin: 10px;
 }
